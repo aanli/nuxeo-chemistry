@@ -1076,13 +1076,28 @@ public class NuxeoCmisService extends AbstractCmisService {
         NuxeoObjectData object = new NuxeoObjectData(this, doc);
         String changeToken = changeTokenHolder == null ? null
                 : changeTokenHolder.getValue();
+	String prevTitle = getTitleSafe(doc);
         updateProperties(object, changeToken, properties, false);
+	String newTitle = getTitleSafe(doc);
         try {
             coreSession.saveDocument(doc);
+	    if (!newTitle.equals(prevTitle)) {
+		DocumentRef docRef = new IdRef(doc.getId());
+		DocumentModel parent = coreSession.getParentDocument(docRef);
+		coreSession.move(docRef, new IdRef(parent.getId()), newTitle);
+	    }
             coreSession.save();
         } catch (ClientException e) {
             throw new CmisRuntimeException(e.toString(), e);
         }
+    }
+
+    private String getTitleSafe(DocumentModel doc) {
+	try {
+	    return doc.getTitle();
+	} catch (ClientException e) {
+	    return "";
+	}
     }
 
     @Override
