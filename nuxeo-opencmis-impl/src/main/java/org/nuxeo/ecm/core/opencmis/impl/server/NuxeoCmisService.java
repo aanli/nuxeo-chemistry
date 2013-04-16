@@ -768,7 +768,11 @@ public class NuxeoCmisService extends AbstractCmisService {
                 throw new CmisInvalidArgumentException("Not a folder: "
                         + folderId);
             }
-            coreSession.removeDocument(new IdRef(folderId));
+	    if (allVersions) {
+		coreSession.removeDocument(new IdRef(folderId));
+	    } else {
+		coreSession.followTransition(new IdRef(folderId), "delete");
+	    }
             coreSession.save();
             // TODO returning null fails in opencmis 0.1.0 due to
             // org.apache.chemistry.opencmis.client.runtime.PersistentFolderImpl.deleteTree
@@ -1971,7 +1975,11 @@ public class NuxeoCmisService extends AbstractCmisService {
                             "Cannot delete non-empty folder: " + objectId);
                 }
             }
-            coreSession.removeDocument(doc.getRef());
+	    if (allVersions) {
+		coreSession.removeDocument(doc.getRef());
+	    } else {
+		coreSession.followTransition(doc.getRef(), "delete");
+	    }
             coreSession.save();
         } catch (ClientException e) {
             throw new CmisRuntimeException(e.toString(), e);
