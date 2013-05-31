@@ -221,7 +221,14 @@ public class NuxeoObjectData implements ObjectData {
         boolean isDocument = baseType == BaseTypeId.CMIS_DOCUMENT;
         boolean isFolder = baseType == BaseTypeId.CMIS_FOLDER;
         boolean isRoot = "/".equals(doc.getPathAsString());
+	boolean canEverything = false;
+        try {
+            canEverything = doc.getCoreSession().hasPermission(doc.getRef(), SecurityConstants.EVERYTHING);
+        } catch (ClientException e) {}
+
         boolean canWrite;
+	if (canEverything) canWrite = true;
+	else
         try {
             canWrite = creation
                     || doc.getCoreSession().hasPermission(doc.getRef(),
@@ -278,8 +285,7 @@ public class NuxeoObjectData implements ObjectData {
                 set.add(Action.CAN_DELETE_OBJECT);
             }
         }
-        if (Boolean.FALSE.booleanValue()) {
-            // TODO
+        if (canEverything) {
             set.add(Action.CAN_GET_OBJECT_RELATIONSHIPS);
             set.add(Action.CAN_APPLY_POLICY);
             set.add(Action.CAN_REMOVE_POLICY);
