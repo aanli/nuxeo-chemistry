@@ -17,7 +17,7 @@
   <modules>
     <module>nuxeo-opencmis-impl</module>
     <module>nuxeo-opencmis-bindings</module>
-    <module>nuxeo-opencmis-tests</module>
+<!--    <module>nuxeo-opencmis-tests</module>-->
   </modules>
 
   <!-- dependencies and chemistry library version set in Nuxeo toplevel POM -->
